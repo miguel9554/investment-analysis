@@ -1,39 +1,23 @@
 import pandas as pd
-from currency_conversion import *
-from collections import namedtuple
+from operations import *
+from custom_types import *
 
-# Define the named tuple Balance with fields ARS and USD
-Balance = namedtuple('Balance', ['ARS', 'USD'])
+# Create a dictionary mapping operation types to corresponding functions
+operation_functions = {
+    'Suscripción Desde Cuenta Balanz': deposit_operation,
+    'Rescate a Banco': deposit_operation,
+    'Transferencia': deposit_operation,
+}
 
-# Define the named tuple State containing a Balance tuple
-State = namedtuple('State', ['balance'])
-
+# Define your update_state function
 def update_state(row: pd.DataFrame, current_state: State) -> State:
+    operation_type = row['Operacion']
 
-    deposit_operations = (
-            'Suscripción Desde Cuenta Balanz',
-            )
-
-    extract_operations = (
-            'Rescate a Banco',
-            'Transferencia',
-            )
-
-    operations = deposit_operations + extract_operations
-
-    operation = row['Operacion']
-
-    if (operation in operations):
-        amount_ARS = row['Monto']*(1 if operation in deposit_operations else -1)
-        USD_price = get_ARS_to_USD(row['Fecha'])
-        amount_USD = amount_ARS/USD_price
-        new_amount_ARS = current_state.balance.ARS+amount_ARS
-        new_amount_USD = current_state.balance.USD+amount_USD
-        next_balance = Balance(ARS=new_amount_ARS, USD=new_amount_USD)
-        next_state = State(balance=next_balance)
-
-        print(f"On {row['Fecha']} USD price: {USD_price}, ARS: {amount_ARS}, USD: {amount_USD}")
+    # Check if the operation type is valid
+    if operation_type in operation_functions:
+        # Call the corresponding function with row data and current state
+        operation_function = operation_functions[operation_type]
+        new_state = operation_function(row, current_state)
+        return new_state
     else:
-        next_state = current_state
-
-    return next_state  # Placeholder, replace with your actual logic
+        raise ValueError(f"Invalid operation type: {operation_type}")
