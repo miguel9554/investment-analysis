@@ -10,28 +10,21 @@ State = namedtuple('State', ['balance'])
 
 def update_state(row: pd.DataFrame, current_state: State) -> State:
 
-    """
-    Update the state based on the row data.
-
-    Parameters:
-        row (pandas.DataFrame): A row of data from the DataFrame.
-        current_state (State): Current state.
-
-    Returns:
-        State: Next state.
-    """
-    # Implement your logic here to update the state based on the row data
-    # For example:
-    # if row['some_column'] > some_threshold:
-    #     return 'new_state'
-    # else:
-    #     return current_state
-    operations = (
+    deposit_operations = (
             'Suscripción Desde Cuenta Balanz',
-            'Rescate a Banco',
             )
-    if (row['Operacion'] in operations):
-        amount_ARS = row['Monto']*(1 if row['Operacion'] == 'Suscripción Desde Cuenta Balanz' else -1)
+
+    extract_operations = (
+            'Rescate a Banco',
+            'Transferencia',
+            )
+
+    operations = deposit_operations + extract_operations
+
+    operation = row['Operacion']
+
+    if (operation in operations):
+        amount_ARS = row['Monto']*(1 if operation in deposit_operations else -1)
         USD_price = get_ARS_to_USD(row['Fecha'])
         amount_USD = amount_ARS/USD_price
         new_amount_ARS = current_state.balance.ARS+amount_ARS
