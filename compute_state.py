@@ -4,9 +4,8 @@ from custom_types import *
 
 # Create a dictionary mapping operation types to corresponding functions
 operation_functions = {
-    'Suscripción Desde Cuenta Balanz': deposit_operation,
-    'Rescate a Banco': deposit_operation,
-    'Transferencia': deposit_operation,
+    'Suscripción Desde Cuenta Balanz': fci_acquisition,
+    'Cambio de Fondo': fci_change,
 }
 
 # Define your update_state function
@@ -18,6 +17,9 @@ def update_state(row: pd.DataFrame, current_state: State) -> State:
         # Call the corresponding function with row data and current state
         operation_function = operation_functions[operation_type]
         new_state = operation_function(row, current_state)
-        return new_state
     else:
         raise ValueError(f"Invalid operation type: {operation_type}")
+
+    print(f'State: {new_state}')
+
+    return new_state

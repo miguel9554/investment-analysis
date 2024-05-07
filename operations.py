@@ -2,34 +2,56 @@ import pandas as pd
 from custom_types import *
 from currency_conversion import *
 
-def increment_balance_ARS(balance, ars, date):
-    usd_price = get_ARS_to_USD(date)
-    usd = ars/usd_price
-    new_amount_ARS = balance.ARS+ars
-    new_amount_USD = balance.USD+usd
-    next_balance = Balance(ARS=new_amount_ARS, USD=new_amount_USD)
+def fci_acquisition(row: pd.DataFrame, current_state: State) -> State:
 
-    print(f"On {date} USD price: {usd_price}, ARS: {ars}, USD: {usd}")
-
-    return next_balance
-
-
-def deposit_operation(row: pd.DataFrame, current_state: State) -> State:
-
-    deposit_operations = (
-            'Suscripción Desde Cuenta Balanz',
-            )
-
-    extract_operations = (
-            'Rescate a Banco',
-            'Transferencia',
-            )
-
-    operation = row['Operacion']
-    monto = row['Monto']*(1 if operation in deposit_operations else -1)
+    quotas_acquired = row['Cantidad Operada']
     date = row['Fecha']
+    fci_name = row['Ticker']
 
-    next_balance = increment_balance_ARS(current_state.balance, monto, date)
-    next_state = State(balance=next_balance)
+    new_FCIs = update_fci_quota(current_state.FCIs, fci_name, quotas_acquired)
 
-    return next_state  # Placeholder, replace with your actual logic
+    new_state = State(FCIs=new_FCIs)
+
+    return new_state
+
+def update_fci_quota(current_fcis, fci_name, quotas_change):
+
+    # Find the tuple with the given name
+    found_fcis = tuple(filter(lambda FCI: FCI.name == fci_name, current_fcis))
+
+    # Extract the initial quotas
+    if len(found_fcis) == 1:
+        initial_quotas = found_fcis[0].quotas
+    elif len(found_fcis) == 0:
+        initial_quotas = 0
+    else:
+        raise Exception(f'More than 1 FCI with name {fci_name}: {found_fcis}')
+
+    new_quotas = initial_quotas + quotas_change
+    if (new_quotas < 0):
+        raise Exception(f'FCI quotas can not be negative')
+
+    new_fci = FCI(name=fci_name, quotas=new_quotas)
+
+    FCIs_without_changed = tuple(filter(lambda FCI: FCI.name != fci_name, current_fcis))
+
+    if (new_quotas > 0):
+        new_FCIs = FCIs_without_changed + (new_fci,)
+    else:
+        new_FCIs = FCIs_without_changed
+
+    return new_FCIs
+
+def fci_change(row: pd.DataFrame, current_state: State) -> State:
+
+    quotas_transfered = row['Cantidad Operada']
+    date = row['Fecha']
+    fci_transfer_from = row['Ticker'].split("->")[0]
+    fci_transfer_to = row['Ticker'].split("->")[1]
+
+    FCIs_transfer_substracted = update_fci_quota(current_state.FCIs, fci_transfer_from, -quotas_transfered)
+    FCIs_transfer_added = update_fci_quota(FCIs_transfer_substracted, fci_transfer_to, +quotas_transfered)
+
+    new_state = State(FCIs=FCIs_transfer_added)
+
+    return new_state
