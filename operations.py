@@ -26,8 +26,10 @@ def deposit_operation(row: pd.DataFrame, current_state: State) -> State:
             )
 
     operation = row['Operacion']
+    monto = row['Monto']*(1 if operation in deposit_operations else -1)
+    date = row['Fecha']
 
-    next_balance = increment_balance_ARS(current_state.balance, row['Monto'], row['Fecha'])
+    next_balance = increment_balance_ARS(current_state.balance, monto, date)
     next_state = State(balance=next_balance)
 
     return next_state  # Placeholder, replace with your actual logic
