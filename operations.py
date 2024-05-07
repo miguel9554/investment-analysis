@@ -53,14 +53,11 @@ def instrument_update(row: pd.DataFrame, current_state: State) -> State:
     current_instruments = getattr(current_state, instrument)
     new_instruments = update_instruments(current_instruments, name, amount_change)
 
-    if (instrument == 'Fondos'):
-        new_state = current_state._replace(Fondos=new_instruments)
-    elif (instrument == 'Cedears'):
-        new_state = current_state._replace(Cedears=new_instruments)
-    elif (instrument == 'Bonos'):
-        new_state = current_state._replace(Bonos=new_instruments)
-    elif (instrument == 'Corporativos'):
-        new_state = current_state._replace(Corporativos=new_instruments)
+    # Create a dictionary to store the new state attributes
+    new_attrs = {instrument: new_instruments}
+
+    # Replace the corresponding attribute in the state
+    new_state = current_state._replace(**new_attrs)
 
     return new_state
 
