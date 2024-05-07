@@ -6,6 +6,8 @@ from custom_types import *
 operation_functions = {
     'Suscripción Desde Cuenta Balanz': fci_acquisition,
     'Cambio de Fondo': fci_change,
+    'Rescate a Banco': fci_extraction,
+    'Transferencia': nop,
 }
 
 # Define your update_state function
