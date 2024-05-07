@@ -33,44 +33,12 @@ def update_fci_quota(current_fcis, fci_name, quotas_change):
 
     return new_FCIs
 
-def fci_acquisition(row: pd.DataFrame, current_state: State) -> State:
+def fci_update(row: pd.DataFrame, current_state: State) -> State:
 
-    if (row['Estado'] != 'Ejecutada') return current_state
-
-    quotas_acquired = row['Cantidad Operada']
+    quotas_acquired = row['Cantidad']
     fci_name = row['Ticker']
 
     new_FCIs = update_fci_quota(current_state.FCIs, fci_name, quotas_acquired)
-
-    new_state = State(FCIs=new_FCIs)
-
-    return new_state
-
-def fci_change(row: pd.DataFrame, current_state: State) -> State:
-
-    if (row['Estado'] != 'Ejecutada') return current_state
-
-    quotas_transfered_from = row['Cantidad']
-    fci_transfer_from = row['Ticker'].split("->")[0]
-
-    fci_transfer_to = row['Ticker'].split("->")[1]
-    quotas_transfered_to = row['Cantidad Operada']
-
-    FCIs_transfer_substracted = update_fci_quota(current_state.FCIs, fci_transfer_from, -quotas_transfered_from)
-    FCIs_transfer_added = update_fci_quota(FCIs_transfer_substracted, fci_transfer_to, +quotas_transfered_to)
-
-    new_state = State(FCIs=FCIs_transfer_added)
-
-    return new_state
-
-def fci_extraction(row: pd.DataFrame, current_state: State) -> State:
-
-    if (row['Estado'] != 'Ejecutada') return current_state
-
-    quotas_extracted = row['Cantidad Operada']
-    fci_name = row['Ticker']
-
-    new_FCIs = update_fci_quota(current_state.FCIs, fci_name, -quotas_extracted)
 
     new_state = State(FCIs=new_FCIs)
 
