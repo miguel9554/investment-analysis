@@ -26,6 +26,9 @@ def update_instruments(current_instruments, instrument_name, amount_change):
         else:
             new_amount = 0
     """
+    # Round to zero if amount is small, we'll consider it a round error
+    if (abs(new_amount) < 1e-3):
+        new_amount = 0
 
     updated_instrument = instrument_t(name=instrument_name, amount=new_amount)
 
