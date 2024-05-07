@@ -21,16 +21,19 @@ def get_operation_function(operation_functions, operation_type):
 # Create a dictionary mapping operation types to corresponding functions
 operation_functions = {
     # FCI movements
-    'Suscripción desde Balanz': fci_update,
-    'Rescate Cambio de Fondo': fci_update,
-    'Suscripción Cambio de Fondo': fci_update,
-    'Rescate': fci_update,
-    'Rescate a Balanz': fci_update,
+    r'Suscripción desde Balanz': instrument_update,
+    r'Rescate Cambio de Fondo': instrument_update,
+    r'Suscripción Cambio de Fondo': instrument_update,
+    r'Rescate': instrument_update,
+    r'Rescate a Balanz': instrument_update,
     # NOP movements
-    'Recibo de Cobro / .*': nop,
-    'Liquidación de Suscripción / .* / .*': nop,
-    'Comprobante de Pago / .*': nop,
-    'Liquidación de Rescate / .* / .*': nop,
+    r'Recibo de Cobro / \d+': nop,
+    r'Liquidación de Suscripción / \d+ / [\w|\s]+': nop,
+    r'Comprobante de Pago / \d+': nop,
+    r'Liquidación de Rescate / \d+ / [\w|\s]+': nop,
+    # CEDEAR/bonos/corporativos
+    r'Boleto / \d+ / COMPRA / \d+ / \w+ / \$': instrument_update,
+    r'Dividendo en efectivo / \w+': nop, # TODO should do something with this
 }
 
 # Define your update_state function

@@ -2,45 +2,54 @@ import pandas as pd
 from custom_types import *
 from currency_conversion import *
 
-def update_fci_quota(current_fcis, fci_name, quotas_change):
+def update_instruments(current_instruments, instrument_name, amount_change):
 
     # Find the tuple with the given name
-    found_fcis = tuple(filter(lambda FCI: FCI.name == fci_name, current_fcis))
+    found_instruments = tuple(filter(lambda instrument: instrument.name == instrument_name, current_instruments))
 
-    # Extract the initial quotas
-    if len(found_fcis) == 1:
-        initial_quotas = found_fcis[0].quotas
-    elif len(found_fcis) == 0:
-        initial_quotas = 0
+    # Extract the initial amount
+    if len(found_instruments) == 1:
+        initial_amount = found_instruments[0].amount
+    elif len(found_instruments) == 0:
+        initial_amount = 0
     else:
-        raise Exception(f'More than 1 FCI with name {fci_name}: {found_fcis}')
+        raise Exception(f'More than 1 instrument with name {instrument_name}: {found_instruments}')
 
-    new_quotas = initial_quotas + quotas_change
-    if (new_quotas < 0):
-        if (abs(new_quotas) > .5):
-            raise Exception(f'FCI {fci_name} quotas can not be negative: {initial_quotas}+{quotas_change}={new_quotas}')
+    new_amount = initial_amount + amount_change
+    if (new_amount < 0):
+        if (abs(new_amount) > .5):
+            raise Exception(f'Instrument {instrument_name} amount can not be negative: {initial_amount}+{amount_change}={new_amount}')
         else:
-            new_quotas = 0
+            new_amount = 0
 
-    new_fci = FCI(name=fci_name, quotas=new_quotas)
+    updated_instrument = instrument_t(name=instrument_name, amount=new_amount)
 
-    FCIs_without_changed = tuple(filter(lambda FCI: FCI.name != fci_name, current_fcis))
+    instruments_without_updated = tuple(filter(lambda instrument: instrument.name != instrument_name, current_instruments))
 
-    if (new_quotas > 0):
-        new_FCIs = FCIs_without_changed + (new_fci,)
+    if (new_amount > 0):
+        new_instruments = instruments_without_updated + (updated_instrument,)
     else:
-        new_FCIs = FCIs_without_changed
+        new_instruments = instruments_without_updated
 
-    return new_FCIs
+    return new_instruments
 
-def fci_update(row: pd.DataFrame, current_state: State) -> State:
+def instrument_update(row: pd.DataFrame, current_state: State) -> State:
 
-    quotas_acquired = row['Cantidad']
-    fci_name = row['Ticker']
+    amount_change = row['Cantidad']
+    name = row['Ticker']
+    instrument = row['Tipo de Instrumento']
 
-    new_FCIs = update_fci_quota(current_state.FCIs, fci_name, quotas_acquired)
+    current_instruments = getattr(current_state, instrument)
+    new_instruments = update_instruments(current_instruments, name, amount_change)
 
-    new_state = State(FCIs=new_FCIs)
+    if (instrument == 'Fondos'):
+        new_state = current_state._replace(Fondos=new_instruments)
+    elif (instrument == 'Cedears'):
+        new_state = current_state._replace(Cedears=new_instruments)
+    elif (instrument == 'Bonos'):
+        new_state = current_state._replace(Bonos=new_instruments)
+    elif (instrument == 'Corporativos'):
+        new_state = current_state._replace(Corporativos=new_instruments)
 
     return new_state
 
