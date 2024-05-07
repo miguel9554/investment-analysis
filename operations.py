@@ -35,6 +35,8 @@ def update_fci_quota(current_fcis, fci_name, quotas_change):
 
 def fci_acquisition(row: pd.DataFrame, current_state: State) -> State:
 
+    if (row['Estado'] != 'Ejecutada') return current_state
+
     quotas_acquired = row['Cantidad Operada']
     fci_name = row['Ticker']
 
@@ -45,6 +47,8 @@ def fci_acquisition(row: pd.DataFrame, current_state: State) -> State:
     return new_state
 
 def fci_change(row: pd.DataFrame, current_state: State) -> State:
+
+    if (row['Estado'] != 'Ejecutada') return current_state
 
     quotas_transfered_from = row['Cantidad']
     fci_transfer_from = row['Ticker'].split("->")[0]
@@ -60,6 +64,8 @@ def fci_change(row: pd.DataFrame, current_state: State) -> State:
     return new_state
 
 def fci_extraction(row: pd.DataFrame, current_state: State) -> State:
+
+    if (row['Estado'] != 'Ejecutada') return current_state
 
     quotas_extracted = row['Cantidad Operada']
     fci_name = row['Ticker']

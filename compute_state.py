@@ -8,6 +8,8 @@ operation_functions = {
     'Cambio de Fondo': fci_change,
     'Rescate a Banco': fci_extraction,
     'Transferencia': nop,
+    'Rescate a Cuenta Balanz': fci_extraction,
+    'Compra Pack': nop,
 }
 
 # Define your update_state function
