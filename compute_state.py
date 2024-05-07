@@ -32,8 +32,17 @@ operation_functions = {
     r'Comprobante de Pago / \d+': nop,
     r'Liquidación de Rescate / \d+ / [\w|\s]+': nop,
     # CEDEAR/bonos/corporativos
-    r'Boleto / \d+ / COMPRA / \d+ / \w+ / \$': instrument_update,
-    r'Dividendo en efectivo / \w+': nop, # TODO should do something with this
+    r'Boleto / \d+ / (COMPRA|VENTA|Licitación MAE) / \d+ / \w+ / (\$|usd)': instrument_update,
+    # Dividends
+    # TODO should do something with this
+    r'Dividendo en efectivo / \w+': nop,
+    r'Renta / [\d|\w]+': nop,
+    # CEDEAR split
+    r'Dividendo en acciones / \w+': instrument_update, # This is actually a CEDEAR split
+    r'Acreditación cambio de ratio / \w+': instrument_update,
+    # Misc
+    r'^Movimiento Manual \/ Conversión CV 7\.000 a CV 10\.000 \(dólar (MEP|mep)\)$': nop,
+    r'Cargo por Descubierto del \d\d/\d\d/\d\d\d\d': nop,
 }
 
 # Define your update_state function
@@ -42,6 +51,6 @@ def update_state(row: pd.DataFrame, current_state: State) -> State:
 
     operation_function = get_operation_function(operation_functions, operation_type)
     new_state = operation_function(row, current_state)
-    print(f'{row["Liquidacion"]}, State: {new_state}')
+    #print(f'{row["Liquidacion"]}, State: {new_state}')
 
     return new_state

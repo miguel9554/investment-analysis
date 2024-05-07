@@ -16,11 +16,16 @@ def update_instruments(current_instruments, instrument_name, amount_change):
         raise Exception(f'More than 1 instrument with name {instrument_name}: {found_instruments}')
 
     new_amount = initial_amount + amount_change
+    # TODO we admit negative accounts, since in some buy/sell, the sell appears first,
+    # is then cancelled by the buy, so is negative for some iterations.
+    # Somewhere a check should be done that no amounts are negative.
+    """
     if (new_amount < 0):
         if (abs(new_amount) > .5):
             raise Exception(f'Instrument {instrument_name} amount can not be negative: {initial_amount}+{amount_change}={new_amount}')
         else:
             new_amount = 0
+    """
 
     updated_instrument = instrument_t(name=instrument_name, amount=new_amount)
 
@@ -35,9 +40,15 @@ def update_instruments(current_instruments, instrument_name, amount_change):
 
 def instrument_update(row: pd.DataFrame, current_state: State) -> State:
 
+    price = row['Precio']
     amount_change = row['Cantidad']
     name = row['Ticker']
     instrument = row['Tipo de Instrumento']
+
+    # TODO not sure if this is right
+    # for buy/sell of dollars, a third op appears with price -1
+    if (price == -1 and instrument == 'Bonos'):
+        return current_state
 
     current_instruments = getattr(current_state, instrument)
     new_instruments = update_instruments(current_instruments, name, amount_change)
