@@ -1,5 +1,7 @@
 import requests
 import csv
+import json
+from datetime import datetime
 
 def write_balanz_fci_api_response(response, filename):
     # Define the CSV fieldnames
@@ -23,7 +25,7 @@ def write_balanz_fci_api_response(response, filename):
             # Write to CSV
             writer.writerow({'Date': date_only, 'Price': obj['ValorCuotaparte']})
 
-def generate_balanz_fci_table(fci_id):
+def generate_balanz_fci_table(fci_id, filepath):
     url = 'https://balanz.com/api-web/v1/funds/history'
     headers = {
         'accept': 'application/json, text/plain, */*',
@@ -33,7 +35,45 @@ def generate_balanz_fci_table(fci_id):
 
     response = requests.post(url, headers=headers, data=data)
 
-    fci_ticker = balanz_fci_code_to_ticker[fci_id]
-    csv_filename = f'{fci_ticker}_{fci_id}.csv'
+    write_balanz_fci_api_response(response, filepath)
 
-    write_balanz_fci_api_response(response, csv_filename)
+def get_funds_data():
+    url = 'https://balanz.com/api-web/v1/funds/funds_data'
+
+    headers = {
+        'accept': 'application/json, text/plain, */*',
+    }
+
+    response = requests.get(url, headers=headers)
+
+    return response.json()
+
+def generate_funds_table(filepath):
+    funds_data = get_funds_data()
+    dump_json(funds_data, filepath)
+
+def dump_json(json_data, file_path):
+    with open(file_path, "w") as json_file:
+        json.dump(json_data, json_file, indent=4)
+
+def read_json(file_path):
+    with open(file_path, "r") as json_file:
+        json_data = json.load(json_file)
+    return json_data
+
+
+def get_funds_id_to_ticker_mapping(filepath):
+    funds_data = read_json(filepath)
+    return extract_funds_id_to_ticker_mapping(funds_data)
+
+def extract_funds_id_to_ticker_mapping(json_list):
+    id_to_ticker_mapping = {}
+
+    for fund in json_list:
+        fund_id = fund.get("CodFondo")
+        ticker = fund.get("NombreAbreviado")
+
+        if fund_id is not None and ticker is not None:
+            id_to_ticker_mapping[fund_id] = ticker
+
+    return id_to_ticker_mapping
