@@ -2,9 +2,19 @@ import os
 import re
 from datetime import datetime
 import csv
+from pathlib import Path
+
+def get_this_file_dir():
+    # Get the path of the current script
+    script_path = Path(__file__).resolve()
+
+    # Get the directory containing the script
+    script_dir = script_path.parent
+
+    return script_dir
 
 def get_fci_price(ticker, date):
-    mapping = get_ticker_to_filepath_mapping('balanz_fcis')
+    mapping = get_ticker_to_filepath_mapping(get_this_file_dir() / 'balanz_fcis')
     try:
         filepath = mapping[ticker]
     except KeyError:
@@ -24,8 +34,15 @@ def get_price_for_date(csv_file, target_date):
             return prices[target_date]
         else:
             # Find the closest dates before and after the target date
-            closest_date_before = max(date for date in dates if date < target_date)
-            closest_date_after = min(date for date in dates if date > target_date)
+            dates_before = tuple(date for date in dates if date < target_date)
+            closest_date_before = max(dates_before)
+
+            dates_after = tuple(date for date in dates if date > target_date)
+            # If there no dates after, we are on a date newer than data
+            # Just return the newest available data
+            if (len(dates_after) == 0):
+                return prices[closest_date_before]
+            closest_date_after = min(dates_after)
 
             # Get the prices for the closest dates
             price_before = prices[closest_date_before]
