@@ -1,22 +1,31 @@
 import requests
 import csv
 from datetime import datetime
-import pandas as pd
 from balanz_api import *
 
-# TODO fix format of this CSV
-# TODO use csv, not pandas
 def generate_MEP_table(filepath):
-
     # Generate URL with current date
     current_date = datetime.now().strftime('%Y-%m-%d')
     url = f'https://mercados.ambito.com/dolarrava/mep/historico-general/01-01-2000/{current_date}'
 
-    # download table
+    # Download table
     response = requests.get(url)
 
-    # Generate CSV
-    pd.DataFrame([{"Fecha": date, "Referencia": buy} for (date, buy) in response.json()[1:]]).to_csv(filepath, index=False)
+    # Check if request was successful
+    if response.status_code == 200:
+        data = response.json()
+
+        # Extract data from response
+        dates = [row[0] for row in data[1:]]
+        prices = [float(row[1].replace(',', '.')) for row in data[1:]]  # Replace commas with dots and convert to floats
+
+        # Write data to CSV file
+        with open(filepath, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Date', 'Price'])  # Rename columns
+            writer.writerows(zip(dates, prices))
+    else:
+        print("Failed to retrieve data from the URL.")
 
 def generate_balanz_fcis_table(funds_data_filepath):
     # Here, we should iterate over all FCIs and generate each table
