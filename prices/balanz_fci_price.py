@@ -3,6 +3,7 @@ import re
 from datetime import datetime
 import csv
 from pathlib import Path
+import pandas as pd
 
 def get_this_file_dir():
     # Get the path of the current script
@@ -18,7 +19,7 @@ def get_fci_price(ticker, date):
     try:
         filepath = mapping[ticker]
     except KeyError:
-        print(f'Prices table for ticker {ticker} not found')
+        raise Exception(f'Prices table for ticker {ticker} not found')
     price = get_price_for_date(filepath, date.date())
     return price
 
@@ -35,6 +36,10 @@ def get_price_for_date(csv_file, target_date):
         else:
             # Find the closest dates before and after the target date
             dates_before = tuple(date for date in dates if date < target_date)
+            if (len(dates_before) == 0):
+                # If there are no dates before, we are on a date older than data
+                # There is no price, so return 0
+                return 0
             closest_date_before = max(dates_before)
 
             dates_after = tuple(date for date in dates if date > target_date)
@@ -69,3 +74,46 @@ def get_ticker_to_filepath_mapping(directory):
                 ticker_filepath_map[ticker] = filepath
 
     return ticker_filepath_map
+
+def interpolate_csv(filepath, date_index):
+    # Load CSV file into DataFrame
+    df = pd.read_csv(filepath, parse_dates=['Date'], index_col='Date', dayfirst=True)
+
+    # Reindex DataFrame with provided date_index
+    df = df.reindex(date_index)
+
+    # Interpolate missing values
+    df['Price'] = df['Price'].interpolate(method='time')
+
+    # Fill NaN values before the first data point with 0
+    df['Price'] = df['Price'].fillna(0)
+
+    # Fill NaN values after the last data point with the last value
+    df['Price'] = df['Price'].fillna(method='ffill')
+
+    return df
+
+def get_fci_price_df(ticker, dates):
+    mapping = get_ticker_to_filepath_mapping(get_this_file_dir() / 'balanz_fcis')
+    try:
+        filepath = mapping[ticker[:-1]]
+    except KeyError:
+        raise Exception(f'Prices table for ticker {ticker} not found')
+    df = interpolate_csv(filepath, dates)
+    # Rename the column to ticker
+    df.columns = [ticker]
+    return df
+
+def get_fcis_price_df(tickers, dates):
+    dfs = ()
+    for ticker in tickers:
+        dfs = dfs + (get_fci_price_df(ticker, dates),)
+    return pd.concat(dfs, axis=1)
+
+def get_dolar_price_df(dates):
+    filepath = get_this_file_dir() / 'dolar' / 'mep.csv'
+    df = interpolate_csv(filepath, dates)
+    # Rename the column to ticker
+    df.columns = ['Dolar MEP']
+    return df
+
