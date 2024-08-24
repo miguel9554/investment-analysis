@@ -76,8 +76,14 @@ def get_ticker_to_filepath_mapping(directory):
     return ticker_filepath_map
 
 def interpolate_csv(filepath, date_index):
+    # Ensure date_index is a DatetimeIndex
+    date_index = pd.to_datetime(date_index)
+
     # Load CSV file into DataFrame
     df = pd.read_csv(filepath, parse_dates=['Date'], index_col='Date', dayfirst=True)
+
+    # Convert DataFrame index to DatetimeIndex
+    df.index = pd.to_datetime(df.index)
 
     # Reindex DataFrame with provided date_index
     df = df.reindex(date_index)
@@ -90,6 +96,8 @@ def interpolate_csv(filepath, date_index):
 
     # Fill NaN values after the last data point with the last value
     df['Price'] = df['Price'].fillna(method='ffill')
+
+    df.index = df.index.date
 
     return df
 
