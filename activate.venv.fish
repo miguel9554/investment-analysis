@@ -1,0 +1,1 @@
+balanz.venv/bin/activate.fish
