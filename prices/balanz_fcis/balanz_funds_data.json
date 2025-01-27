@@ -216,15 +216,15 @@
     },
     {
         "CodFondo": 38,
-        "idI": 256,
-        "Nombre": "Fondo Performance II Clase D",
+        "idI": 253,
+        "Nombre": "BALANZ PERFORMANCE II (Lecaps) Clase A",
         "NombreAbreviado": "PER2D",
         "NombreCorto": "FCI Balanz Performance II",
-        "PerfilInversor": "Moderado",
+        "PerfilInversor": "Conservador",
         "TipoFondo": "Renta Fija",
-        "Horizonte": "Mediano plazo",
+        "Horizonte": "Corto plazo",
         "slug": "performance-ii",
-        "deeplink": ""
+        "deeplink": "https://clientes.balanz.com/auth/login?link=eyJkYXRhIjp7InJlcXVpZXJlbG9naW4iOiIxIiwibmFtZXNwYWNlIjoiQ29yZS5CdXNpbmVzcy5EZXRhbGxlSW5zdHJ1bWVudG8iLCJmb25kbyI6IlBFUjJBIiwicGFuZWwiOiIxMCJ9fQ%3D%3D"
     },
     {
         "CodFondo": 40,
@@ -249,5 +249,39 @@
         "Horizonte": "Mediano plazo",
         "slug": "estrategia-i",
         "deeplink": "https://clientes.balanz.com/link?data=eyJkYXRhIjp7InJlcXVpZXJlbG9naW4iOiIxIiwibmFtZXNwYWNlIjoiQ29yZS5CdXNpbmVzcy5EZXRhbGxlSW5zdHJ1bWVudG8iLCJmb25kbyI6IkVTVFJBMUIiLCJwYW5lbCI6IjEwIn1"
+    },
+    {
+        "CodFondo": 46,
+        "idI": 306,
+        "Nombre": "BALANZ PERFORMANCE VI (Soja) Clase A",
+        "NombreAbreviado": "PER6",
+        "NombreCorto": "Balanz Performance VI (SOJA)",
+        "PerfilInversor": "Moderado",
+        "TipoFondo": "Renta Variable",
+        "Horizonte": "Mediano plazo",
+        "slug": "soja",
+        "deeplink": "https://clientes.balanz.com/link?data=ew0KICAiZGF0YSI6IHsNCiAgICAicmVxdWllcmVsb2dpbiI6IjEiLA0KCSJuYW1lc3BhY2UiOiJDb3JlLkJ1c2luZXNzLkRldGFsbGVJbnN0cnVtZW50byIsDQoJImZvbmRvIjoiU09KQUEiLA0KCSJwYW5lbCI6IjEwIiwNCgkiaWRDYW1wYWlnbiI6IkZDSVNPSkFSRU5UQUJJTElEQURFUy1GQ0ktUkVOVEFCSUxJREFELTIwMjQxMjMwLURFRVBMSU5LIiwNCgkiY2FtcGFpZ25faWQiOiJGQ0lTT0pBUkVOVEFCSUxJREFERVMtRkNJLVJFTlRBQklMSURBRC0yMDI0MTIzMC1ERUVQTElOSyINCiAgfX0"
+    },
+    {
+        "CodFondo": 47,
+        "idI": 314,
+        "Nombre": "Balanz Crecimiento Clase B",
+        "NombreAbreviado": "CRECIB",
+        "NombreCorto": "Balanz Crecimiento",
+        "PerfilInversor": "Moderado",
+        "TipoFondo": "Renta Fija",
+        "Horizonte": "Mediano plazo",
+        "deeplink": "https://clientes.balanz.com/link?data=eyJkYXRhIjp7InJlcXVpZXJlbG9naW4iOiIxIiwibmFtZXNwYWNlIjoiQ29yZS5CdXNpbmVzcy5EZXRhbGxlSW5zdHJ1bWVudG8iLCJmb25kbyI6IkNSRUNJQSIsInBhbmVsIjoiMTAiLCJpZENhbXBhaWduIjoiRkNJQ1JFQ0lNSUVOVE9SRU5UQUJJTElEQUQtRkNJLVJFTlRBQklMSURBRC0yMDI0MDkzMC1ERUVQTElOSyIsImNhbXBhaWduX2lkIjoiRkNJQ1JFQ0lNSUVOVE9SRU5UQUJJTElEQUQtRkNJLVJFTlRBQklMSURBRC0yMDI0MDkzMC1ERUVQTElOSyJ9fQ"
+    },
+    {
+        "CodFondo": 50,
+        "idI": 334,
+        "Nombre": "Balanz Money Market en D\u00f3lares Clase A",
+        "NombreAbreviado": "BCMMUSDA",
+        "NombreCorto": "Balanz Money Market en D\u00f3lares",
+        "PerfilInversor": "Conservador",
+        "TipoFondo": "Transaccionales",
+        "Horizonte": "Corto plazo",
+        "deeplink": "https://clientes.balanz.com/link?data=eyJkYXRhIjp7InJlcXVpZXJlbG9naW4iOiIxIiwibmFtZXNwYWNlIjoiQ29yZS5CdXNpbmVzcy5EZXRhbGxlSW5zdHJ1bWVudG8iLCJmb25kbyI6IkJDTU1VU0RBIiwicGFuZWwiOiIxMCIsImlkQ2FtcGFpZ24iOiJGQ0lNTVVTRFJFTlRBQklMSURBRC1GQ0ktUkVOVEFCSUxJREFELTIwMjQwOTMwLURFRVBMSU5LIiwiY2FtcGFpZ25faWQiOiJGQ0lNTVVTRFJFTlRBQklMSURBRC1GQ0ktUkVOVEFCSUxJREFELTIwMjQwOTMwLURFRVBMSU5LIn19"
     }
 ]
