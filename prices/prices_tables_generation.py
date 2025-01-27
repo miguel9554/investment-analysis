@@ -8,8 +8,13 @@ def generate_MEP_table(filepath):
     current_date = datetime.now().strftime('%Y-%m-%d')
     url = f'https://mercados.ambito.com/dolarrava/mep/historico-general/01-01-2000/{current_date}'
 
-    # Download table
-    response = requests.get(url)
+    # Headers from the curl command
+    headers = {
+        'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1'
+    }
+
+    # Download table with headers
+    response = requests.get(url, headers=headers)
 
     # Check if request was successful
     if response.status_code == 200:
@@ -25,7 +30,7 @@ def generate_MEP_table(filepath):
             writer.writerow(['Date', 'Price'])  # Rename columns
             writer.writerows(zip(dates, prices))
     else:
-        print("Failed to retrieve data from the URL.")
+        print(f"Failed to retrieve data from the URL: {url}.")
 
 def generate_balanz_fcis_table(funds_data_filepath):
     # Here, we should iterate over all FCIs and generate each table
