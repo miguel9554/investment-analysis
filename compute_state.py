@@ -28,6 +28,7 @@ operation_functions = {
     r'Rescate a Balanz': instrument_update,
     # NOP movements
     r'Recibo de Cobro / \d+': nop,
+    r'Recibo de Cobro / \d+': nop,
     r'Liquidación de Suscripción / \d+ / [\w|\s]+': nop,
     r'Comprobante de Pago / \d+': nop,
     r'Liquidación de Rescate / \d+ / [\w|\s]+': nop,
@@ -37,12 +38,16 @@ operation_functions = {
     # TODO should do something with this
     r'Dividendo en efectivo / \w+': nop,
     r'Renta / [\d|\w]+': nop,
+    r'Renta y Amortización / (TX26|RCCJO|AL30|IRCGO)': nop,
     # CEDEAR split
     r'Dividendo en acciones / \w+': instrument_update, # This is actually a CEDEAR split
+    r'Split / \w+': instrument_update, # This is actually a CEDEAR split
     r'Acreditación cambio de ratio / \w+': instrument_update,
     # Misc
     r'^Movimiento Manual \/ Conversión CV 7\.000 a CV 10\.000 \(dólar (MEP|mep)\)$': nop,
+    r'^Movimiento Manual / Gastos por cambio de ratio - NVDA$': nop,
     r'Cargo por Descubierto del \d\d/\d\d/\d\d\d\d': nop,
+    r'Cargo por Descubierto del \d\d/\d/\d\d\d\d': nop,
 }
 
 # Define your update_state function
