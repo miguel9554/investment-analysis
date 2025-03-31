@@ -4,6 +4,7 @@ from datetime import datetime
 import csv
 from pathlib import Path
 import pandas as pd
+from prices.iol_api import *
 
 def get_this_file_dir():
     # Get the path of the current script
@@ -82,21 +83,32 @@ def interpolate_csv(filepath, date_index):
     # Load CSV file into DataFrame
     df = pd.read_csv(filepath, parse_dates=['Date'], index_col='Date', dayfirst=True)
 
+    return interpolate_df(df, date_index)
+
+def interpolate_df(df, date_index):
     # Convert DataFrame index to DatetimeIndex
     df.index = pd.to_datetime(df.index)
 
-    # Reindex DataFrame with provided date_index
+    # Ensure the DataFrame has only one column
+    if df.shape[1] != 1:
+        raise ValueError("DataFrame must have only one column")
+
+    column_name = df.columns[0]  # Get the single column name
+
+    # Reindex DataFrame with provided date_index, ensuring it's a DatetimeIndex
+    date_index = pd.to_datetime(date_index)
     df = df.reindex(date_index)
 
     # Interpolate missing values
-    df['Price'] = df['Price'].interpolate(method='time')
+    df[column_name] = df[column_name].interpolate(method='time')
 
     # Fill NaN values before the first data point with 0
-    df['Price'] = df['Price'].fillna(0)
+    df[column_name] = df[column_name].fillna(0)
 
     # Fill NaN values after the last data point with the last value
-    df['Price'] = df['Price'].fillna(method='ffill')
+    df[column_name] = df[column_name].ffill()
 
+    # Convert index to date only
     df.index = df.index.date
 
     return df
@@ -112,6 +124,30 @@ def get_fci_price_df(ticker, dates):
     df.columns = [ticker]
     return df
 
+def get_cedear_price_df(ticker, dates):
+
+    # Get the first and last dates from the list
+    start_date = min(dates)
+    end_date = max(dates)
+
+    # Fetch data for the entire range at once
+    price_df = fetch_stock_open_close_average(
+        symbol=f'{ticker}D',
+        exchange='BCBA',  # Argentine exchange for CEDEARs
+        from_date=start_date,
+        to_date=end_date
+    )
+
+    price_df = interpolate_df(price_df, dates)
+    price_df.columns = [ticker]
+    return price_df
+
+def get_cedears_price_df(tickers, dates):
+    dfs = ()
+    for ticker in tickers:
+        dfs = dfs + (get_cedear_price_df(ticker, dates),)
+    return pd.concat(dfs, axis=1)
+
 def get_fcis_price_df(tickers, dates):
     dfs = ()
     for ticker in tickers:
@@ -124,4 +160,3 @@ def get_dolar_price_df(dates):
     # Rename the column to ticker
     df.columns = ['Dolar MEP']
     return df
-
