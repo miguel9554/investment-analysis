@@ -45,12 +45,17 @@ def instrument_update(row: pd.DataFrame, current_state: State) -> State:
 
     price = row['Precio']
     amount_change = row['Cantidad']
+    importe = row['Importe']
     name = row['Ticker']
     instrument = row['Tipo de Instrumento']
 
     # TODO not sure if this is right
     # for buy/sell of dollars, a third op appears with price -1
     if (price == -1 and instrument == 'Bonos'):
+        return current_state
+
+    # TODO With Cedears, a second buy appears with price -1
+    if (price == -1 and instrument == 'Cedears' and importe != 0):
         return current_state
 
     current_instruments = getattr(current_state, instrument)
