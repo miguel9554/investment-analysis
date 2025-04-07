@@ -2,9 +2,35 @@ import pandas as pd
 from datetime import datetime
 import pyxirr
 
+def states_to_ingresses(states_dict):
+    # We just need the state at the latest date
+    states_at_max_date = states_dict[max(states_dict)]
+
+    # Now, just convert to dict indexed by instrument
+    return {instrument.name: instrument.ingresses for instrument in states_at_max_date}
+
 def extract_instrument_from_state(states_over_time, instrument):
     instrument_over_time = {key: getattr(value, instrument) for key, value in states_over_time.items()}
     return instrument_over_time
+
+def dict_to_ingresses(original_dict):
+    # Create a list of dictionaries to construct the DataFrame
+    data = []
+    for key, value in original_dict.items():
+        row = {'Date': key}  # Convert key to datetime
+        for instrument_tuple in value:
+            row[instrument_tuple.name] = instrument_tuple.amount
+        data.append(row)
+
+    # Create DataFrame
+    df = pd.DataFrame(data)
+    df.set_index('Date', inplace=True)
+
+    # If for a certain date there is not existence of an instrument,
+    # we'll have NaN. We actually want 0.
+    df.fillna(0, inplace=True)
+
+    return df
 
 def dict_to_dataframe(original_dict):
     # Create a list of dictionaries to construct the DataFrame
@@ -94,10 +120,7 @@ def calculate_interest(deposits, values):
             series = append_value(deposit_series, date, -value)
 
             # Calculate interest and handle exceptions
-            try:
-                interest = pyxirr.xirr(series.index, series.values) * 100
-            except pyxirr.InvalidPaymentsError:
-                interest = 0
+            interest = pyxirr.xirr(series.index, series.values) * 100
 
             # Collect the date and interest value
             dates.add(date)

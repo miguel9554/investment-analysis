@@ -21,11 +21,11 @@ def get_operation_function(operation_functions, operation_type):
 # Create a dictionary mapping operation types to corresponding functions
 operation_functions = {
     # FCI movements
-    r'Suscripción desde Balanz': instrument_update,
-    r'Rescate Cambio de Fondo': instrument_update,
-    r'Suscripción Cambio de Fondo': instrument_update,
-    r'Rescate': instrument_update,
-    r'Rescate a Balanz': instrument_update,
+    r'Suscripción desde Balanz': instrument_alone_update,
+    r'Rescate Cambio de Fondo': instrument_alone_update,
+    r'Suscripción Cambio de Fondo': instrument_alone_update,
+    r'Rescate': instrument_alone_update,
+    r'Rescate a Balanz': instrument_alone_update,
     # NOP movements
     r'Recibo de Cobro / \d+': nop,
     r'Recibo de Cobro / \d+': nop,
@@ -33,16 +33,16 @@ operation_functions = {
     r'Comprobante de Pago / \d+': nop,
     r'Liquidación de Rescate / \d+ / [\w|\s]+': nop,
     # CEDEAR/bonos/corporativos
-    r'Boleto / \d+ / (COMPRA|VENTA|Licitación MAE) / \d+ / \w+ / (\$|usd)': instrument_update,
+    r'Boleto / \d+ / (COMPRA|VENTA|Licitación MAE) / \d+ / \w+ / (\$|usd)': instrument_n_ingress_update,
     # Dividends
     # TODO should do something with this
     r'Dividendo en efectivo / \w+': nop,
     r'Renta / [\d|\w]+': nop,
     r'Renta y Amortización / (TX26|RCCJO|AL30|IRCGO)': nop,
     # CEDEAR split
-    r'Dividendo en acciones / \w+': instrument_update, # This is actually a CEDEAR split
-    r'Split / \w+': instrument_update, # This is actually a CEDEAR split
-    r'Acreditación cambio de ratio / \w+': instrument_update,
+    r'Dividendo en acciones / \w+': instrument_alone_update, # This is actually a CEDEAR split
+    r'Split / \w+': instrument_alone_update, # This is actually a CEDEAR split
+    r'Acreditación cambio de ratio / \w+': instrument_alone_update,
     # Misc
     r'^Movimiento Manual \/ Conversión CV 7\.000 a CV 10\.000 \(dólar (MEP|mep)\)$': nop,
     r'^Movimiento Manual / Gastos por cambio de ratio - NVDA$': nop,
